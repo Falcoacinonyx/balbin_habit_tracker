@@ -10,7 +10,9 @@ class AddHabitScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Habit'),
+        backgroundColor: Colors.yellowAccent,
       ),
+      backgroundColor: Colors.teal,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -18,7 +20,15 @@ class AddHabitScreen extends StatelessWidget {
           children: [
             TextField(
               controller: habitController,
-              decoration: InputDecoration(labelText: 'Habit Name'),
+              decoration: InputDecoration(
+                labelText: 'Habit Name',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none,
+                ),
+              ),
             ),
             SizedBox(height: 20),
             ElevatedButton(
@@ -26,6 +36,9 @@ class AddHabitScreen extends StatelessWidget {
                 Navigator.pop(context, habitController.text);
               },
               child: Text('Save Habit'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.black, backgroundColor: Colors.yellowAccent,
+              ),
             ),
           ],
         ),

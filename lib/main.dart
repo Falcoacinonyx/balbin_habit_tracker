@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'screens/home_screen.dart';
 import 'screens/add_habit_screen.dart';
 import 'screens/habit_detail_screen.dart';
 
+const apiKey = 'AIzaSyB0WKuzeLNpqSWwkL06WQB9XZjBuE3TnMQ';
+
 void main() {
+  Gemini.init(apiKey: apiKey);
   runApp(MyApp());
 }
 

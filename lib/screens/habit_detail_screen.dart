@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:intl/intl.dart';
 
 class HabitDetailScreen extends StatefulWidget {
@@ -15,6 +16,7 @@ class HabitDetailScreen extends StatefulWidget {
 
 class _HabitDetailScreenState extends State<HabitDetailScreen> {
   List<String> logs = [];
+  String aiFeedback = '';
 
   @override
   void initState() {
@@ -77,6 +79,26 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
     );
   }
 
+  Future<void> _getAIFeedback() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String logs = (prefs.getStringList('${widget.habit}_logs') ?? []).join('\n');
+
+    try {
+      final response = await Gemini.instance.prompt(parts: [
+        Part.text('Provide a short, encouraging, and motivational feedback on these habit logs for the habit "${widget.habit}":\n$logs\nAlso suggest improvements. (2-3 sentences only)'),
+      ]);
+
+      setState(() {
+        aiFeedback = response?.output ?? 'No feedback available';
+      });
+    } catch (e) {
+      setState(() {
+        aiFeedback = 'Failed to get feedback: $e';
+      });
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     TextEditingController logController = TextEditingController();
@@ -84,7 +106,9 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.habit),
+        backgroundColor: Colors.yellowAccent,
       ),
+      backgroundColor: Colors.teal,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -108,7 +132,15 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
             ),
             TextField(
               controller: logController,
-              decoration: InputDecoration(labelText: 'Add log'),
+              decoration: InputDecoration(
+                labelText: 'Add log',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none,
+                ),
+              ),
             ),
             SizedBox(height: 20),
             ElevatedButton(
@@ -117,6 +149,14 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                 logController.clear();
               },
               child: Text('Save Log'),
+            ),
+            ElevatedButton(
+              onPressed: _getAIFeedback,
+              child: Text('Get AI Feedback'),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(aiFeedback),
             ),
           ],
         ),
